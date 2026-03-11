@@ -17,14 +17,14 @@ export default function SuccessPage() {
   }, []);
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen bg-black text-center px-6">
+    <main className="flex flex-col items-center justify-center min-h-screen bg-white text-center px-6">
 
       {/* Green circle */}
       <div className="w-56 h-56 rounded-full bg-green-600 flex items-center justify-center text-white text-3xl font-bold shadow-lg">
         Thank You!
       </div>
 
-      <p className="text-white mt-6 max-w-sm">
+      <p className="text-black mt-6 max-w-sm">
         We've successfully confirmed your payment. You will receive sms confirmation shortly.
       </p>
 

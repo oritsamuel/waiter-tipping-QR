@@ -7,11 +7,12 @@ import TipModal from "@/components/TipModal";
 
 export default function Page() {
   const [tip, setTip] = useState(25);
-  const [rating, setRating] = useState(0);
+  const [rating, setRating] = useState(1);
   const [comment, setComment] = useState("");
   const [phone, setPhone] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [open, setOpen] = useState(false);
+  const [phoneError, setPhoneError] = useState("");
 
   const increase = () => setTip(tip + 5);
   const decrease = () => tip > 0 && setTip(tip - 5);
@@ -124,40 +125,56 @@ export default function Page() {
         </div>
 
         {/* Phone Section */}
-        <div className="space-y-2">
-          <p className="text-black text-sm text-left">Payment Method</p>
-          <div className="flex items-center gap-2">
-            {/* Telebirr Logo */}
-            <img src="/telebirr.jpg" className="w-7 h-7" />
+       <div className="space-y-1">
+  <p className="text-black text-sm text-left">Payment Method</p>
 
-            <div className="flex items-center border rounded w-full">
-              <span className="text-black px-2 border-r">+251</span>
-              <input
-                value={phone}
-                onChange={(e) => {
-                  let value = e.target.value.replace(/\D/g, "");
-                  if (value.length <= 9) setPhone(value);
-                }}
-                placeholder="9XXXXXXXX"
-                className="text-black w-full p-2 outline-none"
-              />
-            </div>
-          </div>
-        </div>
+  <div className="flex items-center gap-2">
+    <img src="/telebirr.jpg" className="w-7 h-7" />
+
+    <div
+      className={`flex items-center border rounded w-full ${
+        phoneError ? "border-red-500" : "border-gray-300"
+      }`}
+    >
+      <span className="text-black px-2 border-r">+251</span>
+
+      <input
+        value={phone}
+        onChange={(e) => {
+          let value = e.target.value.replace(/\D/g, "");
+
+          if (value.length <= 9) setPhone(value);
+
+          // remove error while typing
+          setPhoneError("");
+        }}
+        placeholder="9XXXXXXXX"
+        className="text-black w-full p-2 outline-none"
+      />
+    </div>
+  </div>
+
+  {phoneError && (
+    <p className="text-red-500 text-xs text-left">
+      {phoneError}
+    </p>
+  )}
+</div>
 
         {/* Send Tip Button */}
-        <button
-          onClick={() => {
-            if (phone.length !== 9 || !phone.startsWith("9")) {
-              alert("Please enter a valid phone number ");
-              return;
-            }
-            setShowModal(true);
-          }}
-          className="bg-red-600 text-white py-2 rounded w-full hover:bg-red-700"
-        >
-          Send Tip
-        </button>
+     <button
+  onClick={() => {
+    if (phone.length !== 9 || !phone.startsWith("9")) {
+      setPhoneError("Enter a valid phone number");
+      return;
+    }
+
+    setShowModal(true);
+  }}
+  className="bg-red-600 text-white py-2 rounded w-full hover:bg-red-700"
+>
+  Send Tip
+</button>
 
       </div>
 
