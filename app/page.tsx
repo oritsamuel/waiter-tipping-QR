@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import RatingStars from "@/components/RatingStars";
 import TipButtons from "@/components/TipButtons";
 import TipModal from "@/components/TipModal";
@@ -12,7 +14,40 @@ export default function Page() {
   const [phone, setPhone] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [open, setOpen] = useState(false);
-  const [phoneError, setPhoneError] = useState("");
+  const [phoneError, setPhoneError] = useState("");  
+
+  type Waiter = {
+    image?: string;
+    name?: string;
+    rating?: number;
+    phoneNumber?: string;
+    company?: {
+      logo?: string;
+    };
+  };
+
+  const [waiter, setWaiter] = useState<Waiter | null>(null);
+
+  const searchParams = useSearchParams();
+
+  const phoneNumber = searchParams.get("phone");
+  const companyId = searchParams.get("companyId");
+
+useEffect(() => {
+  const fetchWaiter = async () => {
+    if (!phoneNumber || !companyId) return;
+// https://v7-hulubeje.cnetcommerce.com/api/routing/getcompanyimages?tin=0076217301&branchCode=55915&industryType=1992
+    const res = await fetch(
+      `https://v7-hulubeje.cnetcommerce.com/api/waiter/get?phoneNumber=${phoneNumber}&companyId=${companyId}`
+    );
+
+    const data = await res.json();
+    setWaiter(data);
+  };
+
+  fetchWaiter();
+}, [phoneNumber, companyId]);
+
 
   const increase = () => setTip(tip + 5);
   const decrease = () => tip > 0 && setTip(tip - 5);
@@ -22,11 +57,11 @@ export default function Page() {
       <div className="bg-white w-[350px] rounded-xl shadow-lg p-6 text-center space-y-6 relative">
 
         {/* Card with logo half in/out */}
-        <div className="bg-white rounded-xl shadow-lg pt-14 pb-6 px-4 relative text-center">
+        <div className="bg-white border-1 border-yellow-300 rounded-xl shadow-lg pt-14 pb-6 px-4 relative text-center">
 
           {/* Logo half inside/outside */}
           <img
-            src="/logo.png"
+            src={waiter?.company?.logo || "/logo.png"}    
             className="w-20 h-20 rounded-full absolute -top-10 left-1/2 transform -translate-x-1/2 border-4 border-white"
           />
 
@@ -34,7 +69,7 @@ export default function Page() {
           <div className="relative flex justify-center mt-4">
             <div className="relative group p-1 rounded-full bg-gradient-to-b from-yellow-200 to-yellow-500 shadow-md">
               <img
-                src="/waiter1.jpg"
+                src={waiter?.image || "/waiter1.jpg"}
                 className="w-20 h-20 rounded-full cursor-pointer"
                 onClick={() => setOpen(true)}
               />
@@ -50,7 +85,7 @@ export default function Page() {
 
                 {/* Expanded circular image */}
                 <img
-                  src="/waiter1.jpg"
+                  src={waiter?.image || "/waiter1.jpg"}
                   className="absolute top-0 z-50 w-72 h-72 rounded-full shadow-xl border-4 border-white"
                 />
               </>
@@ -59,12 +94,13 @@ export default function Page() {
 
           {/* Name */}
           <h2 className="text-lg font-semibold text-black mt-2">
-            Hana Abebe
+           {waiter?.name}
           </h2>
 
           {/* Rating in one line */}
          
-            <div className="mb-4"> <RatingStars rating={5} /> </div>
+            <div className="mb-4"> <RatingStars rating={waiter?.rating || 0} /> </div>
+            
         
         </div>
 
@@ -179,13 +215,15 @@ export default function Page() {
       </div>
 
       <TipModal
-        show={showModal}
-        onClose={() => setShowModal(false)}
-        tip={tip}
-        rating={rating}
-        comment={comment}
-        phone={phone}
-      />
+  show={showModal}
+  onClose={() => setShowModal(false)}
+  tip={tip}
+  rating={rating}
+  comment={comment}
+  phone={phone}
+  waiterPhoneNumber={waiter?.phoneNumber}
+  companyId={companyId}
+/>
     </main>
   );
 }

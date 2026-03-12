@@ -11,6 +11,8 @@ type Props = {
   rating: number;
   comment: string;
   phone: string;
+  waiterPhoneNumber: string;
+  companyId: string;
 };
 
 export default function TipModal({
@@ -20,26 +22,52 @@ export default function TipModal({
   rating,
   comment,
   phone,
+  waiterPhoneNumber,
+  companyId,
 }: Props) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const payerPhoneNumber = "0" + phone;
 
   if (!show) return null;
 
-  const handleConfirm = async () => {
-    setLoading(true);
+ const handleConfirm = async () => {
+  setLoading(true);
 
-    try {
-      // simulate backend call (replace with real API)
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+  try {
+    const res = await fetch("https://v7-hulubeje.cnetcommerce.com/api/waiter/tip", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        waiterPhoneNumber,
+        payerPhoneNumber,
+        companyId,
+        tipAmount: tip,
+        rating,
+        review: comment,
+        referenceData: {
+          sourceOrderId: "Hulubeje",
+          CommandID: "InitTrans_P2PUSSDPUSH",
+        },
+      }),
+    });
 
-      // after backend confirms payment
+    const data = await res.json();
+
+    if (res.ok) {
       router.push("/success");
-    } catch (error) {
+    } else {
       alert("Payment failed");
       setLoading(false);
     }
-  };
+  } catch (err) {
+    console.error(err);
+    alert("Network error");
+    setLoading(false);
+  }
+};
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
