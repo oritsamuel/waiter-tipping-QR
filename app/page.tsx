@@ -2,28 +2,28 @@
 
 import { useState } from "react";
 import { useEffect } from "react";
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import RatingStars from "@/components/RatingStars";
 import TipButtons from "@/components/TipButtons";
 import TipModal from "@/components/TipModal";
 
-export default function Page() {
+function PageContent() {
   const [tip, setTip] = useState(25);
-  const [rating, setRating] = useState(1);
+  const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [phone, setPhone] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [open, setOpen] = useState(false);
-  const [phoneError, setPhoneError] = useState("");  
+  const [phoneError, setPhoneError] = useState("");
+  const [ratingError, setRatingError] = useState("");
 
   type Waiter = {
-    image?: string;
-    name?: string;
+    photo?: string;
+    fullName?: string;
     rating?: number;
     phoneNumber?: string;
-    company?: {
-      logo?: string;
-    };
+    companyLogo?: string;
   };
 
   const [waiter, setWaiter] = useState<Waiter | null>(null);
@@ -33,24 +33,33 @@ export default function Page() {
   const phoneNumber = searchParams.get("phone");
   const companyId = searchParams.get("companyId");
 
-useEffect(() => {
-  const fetchWaiter = async () => {
-    if (!phoneNumber || !companyId) return;
-// https://v7-hulubeje.cnetcommerce.com/api/routing/getcompanyimages?tin=0076217301&branchCode=55915&industryType=1992
-    const res = await fetch(
-      `https://v7-hulubeje.cnetcommerce.com/api/waiter/get?phoneNumber=${phoneNumber}&companyId=${companyId}`
-    );
+  useEffect(() => {
+    const fetchWaiter = async () => {
+      if (!phoneNumber || !companyId) return;
+      // https://v7-hulubeje.cnetcommerce.com/api/routing/getcompanyimages?tin=0076217301&branchCode=55915&industryType=1992
+      const res = await fetch(
+        `https://v7-hulubeje.cnetcommerce.com/api/waiter/get?phoneNumber=${phoneNumber}&companyId=${companyId}`,
+        {
+          headers: {
+            "x-api-key": "5D5EAFF4-D29A-485B-BDB9-785EF86FFFAE",
+            "Authorization": "Bearer 5D5EAFF4-D29A-485B-BDB9-785EF86FFFAE",
+            "apikey": "5D5EAFF4-D29A-485B-BDB9-785EF86FFFAE"
+          }
+        }
+      );
 
-    const data = await res.json();
-    setWaiter(data);
-  };
+      const result = await res.json();
+      if (result.isSuccessful) {
+        setWaiter(result.data);
+      }
+    };
 
-  fetchWaiter();
-}, [phoneNumber, companyId]);
+    fetchWaiter();
+  }, [phoneNumber, companyId]);
 
 
   const increase = () => setTip(tip + 5);
-  const decrease = () => tip > 0 && setTip(tip - 5);
+  const decrease = () => tip > 5 && setTip(tip - 5);
 
   return (
     <main className="flex justify-center items-start min-h-screen bg-gray-100 py-10">
@@ -61,7 +70,7 @@ useEffect(() => {
 
           {/* Logo half inside/outside */}
           <img
-            src={waiter?.company?.logo || "/logo.png"}    
+            src={waiter?.companyLogo || "/logo.png"}
             className="w-20 h-20 rounded-full absolute -top-10 left-1/2 transform -translate-x-1/2 border-4 border-white"
           />
 
@@ -69,7 +78,7 @@ useEffect(() => {
           <div className="relative flex justify-center mt-4">
             <div className="relative group p-1 rounded-full bg-gradient-to-b from-yellow-200 to-yellow-500 shadow-md">
               <img
-                src={waiter?.image || "/waiter1.jpg"}
+                src={waiter?.photo || "/waiter1.jpg"}
                 className="w-20 h-20 rounded-full cursor-pointer"
                 onClick={() => setOpen(true)}
               />
@@ -85,7 +94,7 @@ useEffect(() => {
 
                 {/* Expanded circular image */}
                 <img
-                  src={waiter?.image || "/waiter1.jpg"}
+                  src={waiter?.photo || "/waiter1.jpg"}
                   className="absolute top-0 z-50 w-72 h-72 rounded-full shadow-xl border-4 border-white"
                 />
               </>
@@ -94,14 +103,14 @@ useEffect(() => {
 
           {/* Name */}
           <h2 className="text-lg font-semibold text-black mt-2">
-           {waiter?.name}
+            {waiter?.fullName}
           </h2>
 
           {/* Rating in one line */}
-         
-            <div className="mb-4"> <RatingStars rating={waiter?.rating || 0} /> </div>
-            
-        
+
+          <div className="mb-4"> <RatingStars rating={waiter?.rating || 0} /> </div>
+
+
         </div>
 
         {/* Tip Section */}
@@ -131,10 +140,19 @@ useEffect(() => {
 
         {/* Rating Section */}
         {/* Rating in one line */}
-<div className="flex mt-2 gap-2 items-center">
-  <span className="text-black text-sm font-medium">Rating:</span>
-  <RatingStars rating={rating} setRating={setRating} />
-</div>
+        <div className="flex flex-col mt-2 gap-1 items-start">
+          <div className="flex gap-2 items-center">
+            <span className="text-black text-sm font-medium">Rating:</span>
+            <RatingStars 
+              rating={rating} 
+              setRating={(val) => {
+                setRating(val);
+                setRatingError(""); // clear error when user clicks a star
+              }} 
+            />
+          </div>
+          {ratingError && <p className="text-red-500 text-xs">{ratingError}</p>}
+        </div>
         {/* Comment Section */}
         <div className="space-y-2">
           <p className="text-black text-sm text-left">Comment</p>
@@ -161,69 +179,85 @@ useEffect(() => {
         </div>
 
         {/* Phone Section */}
-       <div className="space-y-1">
-  <p className="text-black text-sm text-left">Payment Method</p>
+        <div className="space-y-1">
+          <p className="text-black text-sm text-left">Payment Method</p>
 
-  <div className="flex items-center gap-2">
-    <img src="/telebirr.jpg" className="w-7 h-7" />
+          <div className="flex items-center gap-2">
+            <img src="/telebirr.jpg" className="w-7 h-7" />
 
-    <div
-      className={`flex items-center border rounded w-full ${
-        phoneError ? "border-red-500" : "border-gray-300"
-      }`}
-    >
-      <span className="text-black px-2 border-r">+251</span>
+            <div
+              className={`flex items-center border rounded w-full ${phoneError ? "border-red-500" : "border-gray-300"
+                }`}
+            >
+              <span className="text-black px-2 border-r">+251</span>
 
-      <input
-        value={phone}
-        onChange={(e) => {
-          let value = e.target.value.replace(/\D/g, "");
+              <input
+                value={phone}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\D/g, "");
 
-          if (value.length <= 9) setPhone(value);
+                  if (value.length <= 9) setPhone(value);
 
-          // remove error while typing
-          setPhoneError("");
-        }}
-        placeholder="9XXXXXXXX"
-        className="text-black w-full p-2 outline-none"
-      />
-    </div>
-  </div>
+                  // remove error while typing
+                  setPhoneError("");
+                }}
+                placeholder="9XXXXXXXX"
+                className="text-black w-full p-2 outline-none"
+              />
+            </div>
+          </div>
 
-  {phoneError && (
-    <p className="text-red-500 text-xs text-left">
-      {phoneError}
-    </p>
-  )}
-</div>
+          {phoneError && (
+            <p className="text-red-500 text-xs text-left">
+              {phoneError}
+            </p>
+          )}
+        </div>
 
         {/* Send Tip Button */}
-     <button
-  onClick={() => {
-    if (phone.length !== 9 || !phone.startsWith("9")) {
-      setPhoneError("Enter a valid phone number");
-      return;
-    }
+        <button
+          onClick={() => {
+            let hasError = false;
 
-    setShowModal(true);
-  }}
-  className="bg-red-600 text-white py-2 rounded w-full hover:bg-red-700"
->
-  Send Tip
-</button>
+            if (rating === 0) {
+              setRatingError("Please provide a rating before sending your tip.");
+              hasError = true;
+            }
+
+            if (phone.length !== 9 || !phone.startsWith("9")) {
+              setPhoneError("Enter a valid phone number");
+              hasError = true;
+            }
+
+            if (hasError) return;
+
+            setShowModal(true);
+          }}
+          className="bg-red-600 text-white py-2 rounded w-full hover:bg-red-700"
+        >
+          Send Tip
+        </button>
 
       </div>
 
       <TipModal
-  show={showModal}
-  onClose={() => setShowModal(false)}
-  tip={tip}
-  rating={rating}
-  comment={comment}
-  phone={phone}
-  waiterPhoneNumber={waiter?.phoneNumber}
-  companyId={companyId}
-/>
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        tip={tip}
+        rating={rating}
+        comment={comment}
+        phone={phone}
+        waiterPhoneNumber={waiter?.phoneNumber || ""}
+        companyId={companyId || ""}
+      />
     </main>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={null}>
+      <PageContent />
+    </Suspense>
   );
 }

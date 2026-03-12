@@ -25,10 +25,10 @@ export default function SuccessPage() {
       </div>
 
       <p className="text-black mt-6 max-w-sm">
-        We've successfully confirmed your payment. You will receive sms confirmation shortly.
+        We&apos;ve successfully confirmed your payment. You will receive sms confirmation shortly.
       </p>
 
-      <div className="flex flex-col gap-4 mt-8 w-full max-w-xs">
+      {/* <div className="flex flex-col gap-4 mt-8 w-full max-w-xs">
 
         <button
           onClick={() => router.push("/orders")}
@@ -38,7 +38,7 @@ export default function SuccessPage() {
         </button>
 
 
-      </div>
+      </div> */}
 
     </main>
   );

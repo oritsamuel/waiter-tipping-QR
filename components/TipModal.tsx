@@ -39,6 +39,9 @@ export default function TipModal({
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "x-api-key": "5D5EAFF4-D29A-485B-BDB9-785EF86FFFAE",
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwOTY3OTk4MDQwIiwianRpIjoiNDQ3OTgwNjEwQTA0RjYyNDk3MTcxN0NEMTlGNkZCMzQ0MTg4Njk4N0FEQTQ3M0IxOTk4MjRCMzM4QjVBNUE3MTFBRTFGREY2NUIwRjA4NzUxRDQyMDZCQTBDQUExREUxRkJCNEY2MzMyMDlEQUY1RkM3NzE0MzEyQTlFOThFNEIiLCJleHAiOjE3NzUxMTc2OTQsImlzcyI6Ikh1bHViZWplIiwiYXVkIjoiSHVsdWJlamUifQ.46nuCC-vueu6HUx2uGEZxd-WcR05Sr1MwJw9QJPCsLk",
+        "apikey": "5D5EAFF4-D29A-485B-BDB9-785EF86FFFAE"
       },
       body: JSON.stringify({
         waiterPhoneNumber,
