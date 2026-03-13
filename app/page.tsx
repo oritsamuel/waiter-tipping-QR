@@ -42,8 +42,7 @@ function PageContent() {
         {
           headers: {
             "x-api-key": "5D5EAFF4-D29A-485B-BDB9-785EF86FFFAE",
-            "Authorization": "Bearer 5D5EAFF4-D29A-485B-BDB9-785EF86FFFAE",
-            "apikey": "5D5EAFF4-D29A-485B-BDB9-785EF86FFFAE"
+            "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwOTY3OTk4MDQwIiwianRpIjoiNDQ3OTgwNjEwQTA0RjYyNDk3MTcxN0NEMTlGNkZCMzQ0MTg4Njk4N0FEQTQ3M0IxOTk4MjRCMzM4QjVBNUE3MTFBRTFGREY2NUIwRjA4NzUxRDQyMDZCQTBDQUExREUxRkJCNEY2MzMyMDlEQUY1RkM3NzE0MzEyQTlFOThFNEIiLCJleHAiOjE3NzUxMTc2OTQsImlzcyI6Ikh1bHViZWplIiwiYXVkIjoiSHVsdWJlamUifQ.46nuCC-vueu6HUx2uGEZxd-WcR05Sr1MwJw9QJPCsLk"
           }
         }
       );
@@ -143,12 +142,12 @@ function PageContent() {
         <div className="flex flex-col mt-2 gap-1 items-start">
           <div className="flex gap-2 items-center">
             <span className="text-black text-sm font-medium">Rating:</span>
-            <RatingStars 
-              rating={rating} 
+            <RatingStars
+              rating={rating}
               setRating={(val) => {
                 setRating(val);
                 setRatingError(""); // clear error when user clicks a star
-              }} 
+              }}
             />
           </div>
           {ratingError && <p className="text-red-500 text-xs">{ratingError}</p>}

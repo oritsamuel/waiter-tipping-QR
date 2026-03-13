@@ -31,46 +31,45 @@ export default function TipModal({
 
   if (!show) return null;
 
- const handleConfirm = async () => {
-  setLoading(true);
+  const handleConfirm = async () => {
+    setLoading(true);
 
-  try {
-    const res = await fetch("https://v7-hulubeje.cnetcommerce.com/api/waiter/tip", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": "5D5EAFF4-D29A-485B-BDB9-785EF86FFFAE",
-        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwOTY3OTk4MDQwIiwianRpIjoiNDQ3OTgwNjEwQTA0RjYyNDk3MTcxN0NEMTlGNkZCMzQ0MTg4Njk4N0FEQTQ3M0IxOTk4MjRCMzM4QjVBNUE3MTFBRTFGREY2NUIwRjA4NzUxRDQyMDZCQTBDQUExREUxRkJCNEY2MzMyMDlEQUY1RkM3NzE0MzEyQTlFOThFNEIiLCJleHAiOjE3NzUxMTc2OTQsImlzcyI6Ikh1bHViZWplIiwiYXVkIjoiSHVsdWJlamUifQ.46nuCC-vueu6HUx2uGEZxd-WcR05Sr1MwJw9QJPCsLk",
-        "apikey": "5D5EAFF4-D29A-485B-BDB9-785EF86FFFAE"
-      },
-      body: JSON.stringify({
-        waiterPhoneNumber,
-        payerPhoneNumber,
-        companyId,
-        tipAmount: tip,
-        rating,
-        review: comment,
-        referenceData: {
-          sourceOrderId: "Hulubeje",
-          CommandID: "InitTrans_P2PUSSDPUSH",
+    try {
+      const res = await fetch("https://v7-hulubeje.cnetcommerce.com/api/waiter/tip", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": "5D5EAFF4-D29A-485B-BDB9-785EF86FFFAE",
+          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwOTY3OTk4MDQwIiwianRpIjoiNDQ3OTgwNjEwQTA0RjYyNDk3MTcxN0NEMTlGNkZCMzQ0MTg4Njk4N0FEQTQ3M0IxOTk4MjRCMzM4QjVBNUE3MTFBRTFGREY2NUIwRjA4NzUxRDQyMDZCQTBDQUExREUxRkJCNEY2MzMyMDlEQUY1RkM3NzE0MzEyQTlFOThFNEIiLCJleHAiOjE3NzUxMTc2OTQsImlzcyI6Ikh1bHViZWplIiwiYXVkIjoiSHVsdWJlamUifQ.46nuCC-vueu6HUx2uGEZxd-WcR05Sr1MwJw9QJPCsLk"
         },
-      }),
-    });
+        body: JSON.stringify({
+          waiterPhoneNumber,
+          payerPhoneNumber,
+          companyId,
+          tipAmount: tip,
+          rating,
+          review: comment,
+          referenceData: {
+            sourceOrderId: "Hulubeje",
+            CommandID: "InitTrans_P2PUSSDPUSH",
+          },
+        }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (res.ok) {
-      router.push("/success");
-    } else {
-      alert("Payment failed");
+      if (res.ok) {
+        router.push("/success");
+      } else {
+        alert("Payment failed");
+        setLoading(false);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Network error");
       setLoading(false);
     }
-  } catch (err) {
-    console.error(err);
-    alert("Network error");
-    setLoading(false);
-  }
-};
+  };
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
