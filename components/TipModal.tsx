@@ -58,10 +58,10 @@ export default function TipModal({
 
       const data = await res.json();
 
-      if (res.ok) {
+      if (res.ok && data.isSuccessful) {
         router.push("/success");
       } else {
-        alert("Payment failed");
+        alert(data.message || "Payment not successful");
         setLoading(false);
       }
     } catch (err) {
